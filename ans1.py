@@ -2,44 +2,46 @@
 from opencv import highgui
 from opencv import cv
 from math import sin, cos
+from math import pi
+from math import sqrt
 import sys, getopt
 
-#Scale
-s = 3
-printArrayI = []
-printArray0 = []
 
 image = highgui.cvLoadImage("circle.jpg", highgui.CV_LOAD_IMAGE_GRAYSCALE)
 
-
-def setScale(scale):
-    s = scale
 
 #myX and myY represent the calling pixel's location.
 def getPixelValues(x, y, theta, scale):
 #Pixel value array
     pxArray = []
     sum = 0
+    if((theta*2)/pi == int((theta*2)/pi)):
+        d = 1
+    else:
+        d = sqrt(2) 
+    
     for i in range(scale):
         #print "x: %s" %  int(x + i*cos(theta))
-        pxArray.append(image[int(x + i*cos(theta)), int(y + i*sin(theta))])
+        pxArray.append(image[int(x + i*d*cos(theta)), int(y + i*d*sin(theta))])
     #There's probably an easy way to average an array in py
     for i in range(scale):
         sum += pxArray[i]
-    return (sum/s)
+    return (sum/scale)
 
 
-#For theta = 0
-setScale(7)
-size = cv.cvSize(image.width, image.height)
-theta0_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
-for y in range(image.height):
-    for x in range(image.width - s):
-        theta0_image[x, y] =  getPixelValues(x, y, 0, s)
-        if(image[x, y] > 0 and image[x, y] < 255):
-            printArrayI.append( image[x, y])
-            printArray0.append( theta0_image[x, y] ) 
+def solveHWProblem(theta, scale):
+    fileName = "theta%s_s%s.jpg" % (theta, scale)
+    size = cv.cvSize(image.width - 2*scale , image.height - 2*scale)
+    theta_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
+    #range(s, value): stay s pixels away from all boundaries.
+    #print range(scale, image.height -scale)
+    for y in range(scale, image.height - scale):
+        for x in range(scale, image.width - scale):
+            theta_image[x-scale, y-scale] =  getPixelValues(x, y, theta, scale)
+            #if(image[x, y] > 0 and image[x, y] < 255):
 
+    
+    highgui.cvSaveImage(fileName, theta_image)
 
-
-highgui.cvSaveImage("theta0.jpg", theta0_image)
+for i in range(8):
+    solveHWProblem((i*pi)/4, 5)
