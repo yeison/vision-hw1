@@ -87,16 +87,22 @@ def dofIA2(x, y, theta, s):
     return iA2(x, y, theta, s) - iA2(x-d*cos(theta), y-d*sin(theta), pi + theta, s)
 
 
-thetaPxArray = []
 def solveHWProblem(theta, scale, function):
+    #An ugly fix until we figure out how to completely index non-square images.
+    if(image.width > image.height):
+        width = image.height
+        height = image.height
+    else:
+        width = image.width
+        height = image.width
     dir = sys.argv[1][0:-4]
     fileName = "%s/theta%spi_s%s_%s.jpg" % (dir, theta/pi, scale, function.__name__)
-    size = cv.cvSize(image.width - 2*scale , image.height - 2*scale)
+    size = cv.cvSize(width - 2*scale , height - 2*scale)
     theta_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
     #range(s, value): stay s pixels away from all boundaries.
     #print range(scale, image.height -scale)
-    for x in range(scale-1, (image.height-1) - scale):
-        for y in range(scale-1, (image.height-1) - scale): 
+    for x in range(scale-1, (width-1) - scale):
+        for y in range(scale-1, (height-1) - scale): 
             if(function.__name__ == "dofIA2") :
                 theta_image[x-scale, y-scale] = function(x, y, theta, scale)/2 + 128
             else:
