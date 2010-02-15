@@ -1,10 +1,30 @@
 #!/usr/bin/env python
+#Currently this program must be run from the command line.
 from opencv import highgui, cv
 from math import sin, cos, pi, sqrt
-import sys, getopt
+from types import NoneType
+import os, sys, getopt, string
 
 
-image = highgui.cvLoadImage("circle.jpg", highgui.CV_LOAD_IMAGE_GRAYSCALE)
+def main():
+    for j in [3, 5, 7]:
+        for i in range(8):
+            solveHWProblem((i*pi)/4, j, iA1)
+            solveHWProblem((i*pi)/4, j, iA2)
+        for i in range(4):
+            solveHWProblem((i*pi)/4, j, dofIA2)
+
+        
+#Open the image, and assign it to the global variable image.
+try:
+    image = highgui.cvLoadImage(sys.argv[1], highgui.CV_LOAD_IMAGE_GRAYSCALE)
+    if(type(image) == NoneType):
+        print >> sys.stderr, "  The filename provided does not exist."
+        sys.exit(1)
+except IndexError as e:
+    print >> sys.stderr, "  Please provide the name of a local image."
+    sys.exit(1)
+
 
 #Determines if the angle is diagonal with respect to the x or y axes.
 def checkAngle(theta):
@@ -14,7 +34,7 @@ def checkAngle(theta):
         return sqrt(2) 
 
 
-def getPixelValues(x, y, theta, scale):
+def intensityAccum1(x, y, theta, scale):
 #Pixel value array
     pxArray = []
     sum = 0
@@ -27,7 +47,7 @@ def getPixelValues(x, y, theta, scale):
         sum += pxArray[i]
     return (sum/scale)
 #Shorten the function name
-iA1 = intensityAccum1 = getPixelValues
+iA1 = intensityAccum1
 
 
 def intensityAccum2(x, y, theta, s):
@@ -57,7 +77,8 @@ def dofIA2(x, y, theta, s):
 
 thetaPxArray = []
 def solveHWProblem(theta, scale, function):
-    fileName = "newimages/theta%spi_s%s_%s.jpg" % (theta/pi, scale, function.__name__)
+    dir = sys.argv[1][0:-4]
+    fileName = "%s/theta%spi_s%s_%s.jpg" % (dir, theta/pi, scale, function.__name__)
     size = cv.cvSize(image.width - 2*scale , image.height - 2*scale)
     theta_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
     #range(s, value): stay s pixels away from all boundaries.
@@ -69,10 +90,13 @@ def solveHWProblem(theta, scale, function):
             else:
                 theta_image[x-scale, y-scale] = function(x, y, theta, scale)
             #if(image[x, y] > 0 and image[x, y] < 255):
+    if not os.path.exists(dir):
+        os.mkdir(dir)
     highgui.cvSaveImage(fileName, theta_image)
+    print "finished: %s" % fileName
 
 #for i in range(8):
 #    solveHWProblem((i*pi)/4, 5)
 
-
-solveHWProblem(pi/4, 5, dofIA2)
+if __name__ == "__main__":
+    main()
