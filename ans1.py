@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #Currently this program must be run from the command line.
 from opencv import highgui, cv
-from math import sin, cos, pi, sqrt
+from math import sin, cos, pi, sqrt, floor
 from types import NoneType
 import os, sys, getopt, string
 
@@ -10,6 +10,12 @@ def main():
     for j in [3, 5, 7]:
         for i in range(8):
             solveHWProblem((i*pi)/4, j, iA1)
+            #The image produced from the function call above could be used as
+            #a lookup table for the function call below.  This way, the process
+            #would run much faster, but with the current implementation the
+            #image below would lose 14 pixels from each edge if we were to do that.
+            #If performence were a top priority, the function solveHWProblem could
+            #be modified.
             solveHWProblem((i*pi)/4, j, iA2)
         for i in range(4):
             solveHWProblem((i*pi)/4, j, dofIA2)
@@ -37,15 +43,21 @@ def checkAngle(theta):
 def intensityAccum1(x, y, theta, scale):
 #Pixel value array
     pxArray = []
-    sum = 0
     d = checkAngle(theta)
     for i in range(scale):
+        target_x = int(x + i*d*cos(theta))
+        target_y = int(y + i*d*sin(theta))
+        #The if statements below checks for a case on the edges where
+        #rounding to an integer steps outside of the image dimentions.
+        if(target_x >= image.width):
+            print target_x
+            target_x = int(x + floor(i*d*cos(theta)))
+        if(target_y >= image.height):
+            print target_y
+            target_y = int(y + floor(i*d*sin(theta)))
         #print "x: %s" %  int(x + i*cos(theta))
-        pxArray.append(image[int(x + i*d*cos(theta)), int(y + i*d*sin(theta))])
-    #There's probably an easy way to average an array in py
-    for i in range(scale):
-        sum += pxArray[i]
-    return (sum/scale)
+        pxArray.append(image[target_x, target_y])
+    return sum(pxArray)/scale
 #Shorten the function name
 iA1 = intensityAccum1
 
@@ -83,13 +95,12 @@ def solveHWProblem(theta, scale, function):
     theta_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
     #range(s, value): stay s pixels away from all boundaries.
     #print range(scale, image.height -scale)
-    for y in range(scale, image.height - scale):
-        for x in range(scale, image.width - scale):
+    for x in range(scale-1, (image.height-1) - scale):
+        for y in range(scale-1, (image.height-1) - scale): 
             if(function.__name__ == "dofIA2") :
                 theta_image[x-scale, y-scale] = function(x, y, theta, scale)/2 + 128
             else:
                 theta_image[x-scale, y-scale] = function(x, y, theta, scale)
-            #if(image[x, y] > 0 and image[x, y] < 255):
     if not os.path.exists(dir):
         os.mkdir(dir)
     highgui.cvSaveImage(fileName, theta_image)
