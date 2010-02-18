@@ -83,10 +83,11 @@ def intensityAccum2(x, y, theta, s):
 iA2 = intensityAccum2
 
 #Derivative of iA2 along angle theta.
-def dofIA2(x, y, theta, s):
+def derivativeOfIA2(x, y, theta, s):
     d = checkAngle(theta)
     return iA2(x, y, theta, s) - iA2(x-d*cos(theta), y-d*sin(theta), pi + theta, s)
 
+dofIA2 = derivativeOfIA2
 
 def solveHWProblem(theta, scale, function):
     #An ugly fix until we figure out how to completely index non-square images.

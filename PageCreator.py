@@ -22,10 +22,11 @@ class HTMLPage:
         if not soup.find(id=function_scale):
             soup.find(id=function).insert(0, tr)
             tr['id'] = function_scale
-            scaleString = NavigableString("%s" % scale)
-            h3 = Tag(soup, "h2")
+            scaleString = NavigableString("\tScale: %s" % scale)
+            h3 = Tag(soup, "font")
+            h3['size'] = 6
             h3.insert(0, scaleString)
-            soup.find(id=function).insert(0, h3)
+            td.insert(0, h3)
             
         scale_angle = "%s-%s" % (function_scale, angle)
         if not soup.find(id=scale_angle):
