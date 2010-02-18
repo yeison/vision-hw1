@@ -1,4 +1,5 @@
 from BeautifulSoup import BeautifulSoup, Tag, NavigableString
+from math import pi
 import os
 
 class HTMLPage:
@@ -18,13 +19,20 @@ class HTMLPage:
             soup.find(id=original).insert(0, tr)
             tr['id'] = name_angle
             
-        angle_scale_function = "%s%s%s" % (name_angle, scale, function)
-        if not soup.find(id=angle_scale):
+        angle_scale_function = "%s-%s%s" % (name_angle, scale, function)
+        if not soup.find(id=angle_scale_function):
             soup.find(id=name_angle).insert(0, td)
             td['id'] = angle_scale_function
 
         td.insert(0, img)
+        fileName = "%s/theta%spi_s%s_%s.jpg" % (original, angle, scale, function)
+        img['src'] = fileName
         
+        file = open(self.pageName, 'w')
+        file.write(soup.prettify())
+        file.close()
+
+        return fileName
 
 
     def newHtml(self, pageName):
@@ -34,37 +42,16 @@ class HTMLPage:
   <head>\n\
   </head>\n\
   <body>\n\
-    <table>\n\
-      <td id=row0></td>\n\
-      <td id=row1></td>\n\
-      <td id=row2></td>\n\
-      <td id=row3></td>\n\
-      <td id=row4></td>\n\
-      <td id=row5></td>\n\
-      <td id=row6></td>\n\
-      <td id=row7></td>\n\
-    </table>\n\
   </body>\n\
 </html>"
         file.write(html)
         file.close()
 
     def __init__(self, pageName="vishw1.html"):
+        self.pageName = pageName
         if not os.path.exists(pageName):
            self.newHtml(pageName)
-        self.file = open(pageName, 'rw')
-        self.html = self.file.read()
-        self.soup = BeautifulSoup(self.html)
-        img = Tag(self.soup, "img")
-        img['src'] = "http//word"
-        self.soup('td')[2].insert(0, img)
-        img = Tag(self.soup, "img")
-        self.soup('td')[2].insert(0, img)
-        this = "str1"
-        that = "str2"
-        print "%s%s" % (this, that)
-        
-
-            
-
-page = HTMLPage()
+        file = open(pageName, 'r')
+        html = file.read()
+        file.close()
+        self.soup = BeautifulSoup(html)

@@ -3,6 +3,7 @@
 from opencv import highgui, cv
 from math import sin, cos, pi, sqrt, floor
 from types import NoneType
+from PageCreator import HTMLPage
 import os, sys, getopt, string
 
 
@@ -96,7 +97,7 @@ def solveHWProblem(theta, scale, function):
         width = image.width
         height = image.width
     dir = sys.argv[1][0:-4]
-    fileName = "%s/theta%spi_s%s_%s.jpg" % (dir, theta/pi, scale, function.__name__)
+    fileName = HTML.insertImage(dir, theta/pi, scale, function.__name__)
     size = cv.cvSize(width - 2*scale , height - 2*scale)
     theta_image = cv.cvCreateImage(size, cv.IPL_DEPTH_8U, 1)
     #range(s, value): stay s pixels away from all boundaries.
@@ -112,8 +113,7 @@ def solveHWProblem(theta, scale, function):
     highgui.cvSaveImage(fileName, theta_image)
     print "finished: %s" % fileName
 
-#for i in range(8):
-#    solveHWProblem((i*pi)/4, 5)
 
+HTML = HTMLPage()
 if __name__ == "__main__":
     main()
