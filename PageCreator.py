@@ -32,7 +32,7 @@ class HTMLPage:
         if not soup.find(id=scale_angle):
             soup.find(id=function_scale).insert(0, td)
             td['id'] = scale_angle
-            tr['th'] = scale_angle
+
 
         td.insert(0, img)
         fileName = "%s/theta%spi_s%s_%s.jpg" % (original, angle, scale, function)
