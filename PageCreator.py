@@ -10,48 +10,42 @@ class HTMLPage:
         td = Tag(soup, "td")
         img = Tag(soup, "img")
         
-        if not soup.find(id=original): 
+        if not soup.find(id=function): 
             soup.body.insert(0, table)
-            table['id'] = original
+            table['id'] = function
+            heading = NavigableString(function)
+            h2 = Tag(soup, "h2")
+            h2.insert(0, heading)
+            table.insert(0, h2)
 
-        name_angle = "%s%s" % (original, angle) 
-        if not soup.find(id=name_angle):
-            soup.find(id=original).insert(0, tr)
-            tr['id'] = name_angle
+        function_scale = "function:%s_scale:%s" % (function, scale) 
+        if not soup.find(id=function_scale):
+            soup.find(id=function).insert(0, tr)
+            tr['id'] = function_scale
+            scaleString = NavigableString("%s" % scale)
+            h3 = Tag(soup, "h2")
+            h3.insert(0, scaleString)
+            soup.find(id=function).insert(0, h3)
             
-        angle_scale_function = "%s-%s%s" % (name_angle, scale, function)
-        if not soup.find(id=angle_scale_function):
-            soup.find(id=name_angle).insert(0, td)
-            td['id'] = angle_scale_function
+        scale_angle = "%s-%s" % (function_scale, angle)
+        if not soup.find(id=scale_angle):
+            soup.find(id=function_scale).insert(0, td)
+            td['id'] = scale_angle
+            tr['th'] = scale_angle
 
         td.insert(0, img)
         fileName = "%s/theta%spi_s%s_%s.jpg" % (original, angle, scale, function)
         img['src'] = fileName
         
-        file = open(self.pageName, 'w')
+        pageName = "%s.html" % original
+        file = open(pageName, 'w')
         file.write(soup.prettify())
         file.close()
 
         return fileName
 
 
-    def newHtml(self, pageName):
-        file = open(pageName, 'w')
-        html = "\
-<html>\n\
-  <head>\n\
-  </head>\n\
-  <body>\n\
-  </body>\n\
-</html>"
-        file.write(html)
-        file.close()
-
-    def __init__(self, pageName="vishw1.html"):
-        self.pageName = pageName
-        if not os.path.exists(pageName):
-           self.newHtml(pageName)
-        file = open(pageName, 'r')
+    def __init__(self):
+        file = open("template", 'r')
         html = file.read()
-        file.close()
         self.soup = BeautifulSoup(html)
