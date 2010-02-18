@@ -28,7 +28,7 @@ class HTMLPage:
             h3.insert(0, scaleString)
             td.insert(0, h3)
             
-        scale_angle = "%s-%s" % (function_scale, angle)
+        scale_angle = "%s-%spi" % (function_scale, angle)
         if not soup.find(id=scale_angle):
             soup.find(id=function_scale).insert(0, td)
             td['id'] = scale_angle
