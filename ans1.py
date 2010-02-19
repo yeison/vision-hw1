@@ -8,8 +8,8 @@ import os, sys, getopt, string
 
 
 def main():
-    for j in [3, 5, 7]:
-        for i in range(8):
+    for j in [7, 5, 3]:
+        for i in [7, 6, 5, 4, 3, 2, 1, 0]:
             solveHWProblem((i*pi)/4, j, iA1)
             #The image produced from the function call above could be used as
             #a lookup table for the function call below.  This way, the process
@@ -18,7 +18,7 @@ def main():
             #If performence were a top priority, the function solveHWProblem could
             #be modified.
             solveHWProblem((i*pi)/4, j, iA2)
-        for i in range(4):
+        for i in [3, 2, 1, 0]:
             solveHWProblem((i*pi)/4, j, dofIA2)
 
         
