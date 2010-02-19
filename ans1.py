@@ -40,9 +40,20 @@ def checkAngle(theta):
     else:
         return sqrt(2) 
 
+#Checks if the lookup table has this value already computed.
+def getFromLUT(LUT, x, y, theta, scale):
+    try:
+        value = LUT[x, y, theta, scale]
+    except KeyError as e:
+        return None
+    return value
 
+iA1Hash = {}
 def intensityAccum1(x, y, theta, scale):
 #Pixel value array
+    iA1ValueExists = getFromLUT(iA1Hash, x, y, theta, scale)
+    if iA1ValueExists:
+        return iA1ValueExists
     pxArray = []
     d = checkAngle(theta)
     for i in range(scale):
@@ -58,12 +69,17 @@ def intensityAccum1(x, y, theta, scale):
             target_y = int(y + floor(i*d*sin(theta)))
         #print "x: %s" %  int(x + i*cos(theta))
         pxArray.append(image[target_x, target_y])
-    return sum(pxArray)/scale
+    iA1Value = sum(pxArray)/scale
+    iA1Hash[x, y, theta, scale] = iA1Value
+    return iA1Value
 #Shorten the function name
 iA1 = intensityAccum1
 
-
+iA2Hash = {}
 def intensityAccum2(x, y, theta, s):
+    iA1ValueExists = getFromLUT(iA2Hash, x, y, theta, s)
+    if iA1ValueExists:
+        return iA1ValueExists
     d = checkAngle(theta)
     if(d == 1): #If theta is along a straight line.
         term1 = iA1(x, y, theta, s)
