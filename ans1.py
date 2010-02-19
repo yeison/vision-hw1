@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#Written by Yeison Rodriguez
+#Requirements: OpenCV Library v2.0, BeautifulSoup.py and PageCreator.py
 #Currently this program must be run from the command line.
 from opencv import highgui, cv
 from math import sin, cos, pi, sqrt, floor

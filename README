@@ -1,3 +1,6 @@
+#Author: Yeison Rodriguez
+#Requirements: OpenCV v2.0 Library, BeautifulSoup.py and PageCreator.py
+
 Pass the name of the image file you'd like to modify to ans1.py.  The python script will output a folder named after the image, as well as an html page to view the images in a relatively well-organized order.
 
 For example, at a terminal type: 

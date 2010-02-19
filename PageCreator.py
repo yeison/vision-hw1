@@ -1,3 +1,4 @@
+#Written by Yeison Rodriguez
 from BeautifulSoup import BeautifulSoup, Tag, NavigableString
 from math import pi
 import os
