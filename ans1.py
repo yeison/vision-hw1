@@ -79,9 +79,9 @@ iA1 = intensityAccum1
 
 iA2Hash = {}
 def intensityAccum2(x, y, theta, s):
-    iA1ValueExists = getFromLUT(iA2Hash, x, y, theta, s)
-    if iA1ValueExists:
-        return iA1ValueExists
+    valueExists = getFromLUT(iA2Hash, x, y, theta, s)
+    if valueExists:
+        return valueExists
     d = checkAngle(theta)
     if(d == 1): #If theta is along a straight line.
         term1 = iA1(x, y, theta, s)
@@ -89,6 +89,7 @@ def intensityAccum2(x, y, theta, s):
         term3 = iA1(x-d*sin(theta), y+d*cos(theta), theta, s)
         term4 = iA1(x+d*sin(theta), y-d*cos(theta), theta, s)
         ia2 = (term1 + term2 + term3 + term4)/4
+        iA2Hash[x, y, theta, s] = ia2
         return ia2
     else:       #If theta is along a diagonal.
         term1 = iA1(x, y, theta, s)
@@ -96,15 +97,21 @@ def intensityAccum2(x, y, theta, s):
         term3 = iA1(x, y+d*sin(theta), theta, s)
         term4 = iA1(x+d*cos(theta), y, theta, s)
         ia2 = (term1 + term2 + term3 + term4)/4
+        iA2Hash[x, y, theta, s] = ia2
         return ia2
 #Shorten function name
 iA2 = intensityAccum2
 
 #Derivative of iA2 along angle theta.
+dofIA2Hash = {}
 def dofIA2(x, y, theta, s):
+    valueExists = getFromLUT(dofIA2Hash, x, y, -theta, s)
+    if valueExists:
+        return valueExists
     d = checkAngle(theta)
-    return iA2(x, y, theta, s) - iA2(x-d*cos(theta), y-d*sin(theta), pi + theta, s)
-
+    deriv = iA2(x, y, theta, s) - iA2(x-d*cos(theta), y-d*sin(theta), pi + theta, s)
+    dofIA2Hash[x, y, theta, s] = deriv
+    return deriv
 
 def solveHWProblem(theta, scale, function):
     #An ugly fix until we figure out how to completely index non-square images.
